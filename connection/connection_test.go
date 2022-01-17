@@ -2,6 +2,7 @@ package connection
 
 import (
 	"fmt"
+	"github.com/golang/protobuf/proto"
 	lb "github.com/hyperledger/fabric-protos-go/peer/lifecycle"
 	"testing"
 )
@@ -15,8 +16,8 @@ var testConn = APIConfig{
 	PeerAddress: "peer0.test-org1.fracta.ivorychian.io:8443",
 }
 
-const channelName = "main-channel-2"
-const ccName = "test-abc"
+const channelName = "test-acl-channel"
+const ccName = "test-janie"
 
 func TestNewGateway(t *testing.T) {
 	con, err := New(&testConn)
@@ -31,6 +32,7 @@ func TestNewGateway(t *testing.T) {
 			Version:  "1.0",
 		}
 		res, err := con.LifecycleApproveCC(&req, channelName)
+
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -42,6 +44,8 @@ func TestNewGateway(t *testing.T) {
 			Sequence: 1,
 		}
 		res, err := con.LifecycleQueryApproved(&req, channelName)
+		abc := lb.QueryApprovedChaincodeDefinitionResult{}
+		proto.Unmarshal(res, &abc)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -68,6 +72,8 @@ func TestNewGateway(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
+		abc := lb.CheckCommitReadinessResult{}
+		proto.Unmarshal(res, &abc)
 		fmt.Println(string(res))
 	})
 	t.Run("Test Lifecycle query Commited", func(t *testing.T) {
