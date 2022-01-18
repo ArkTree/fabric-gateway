@@ -24,7 +24,7 @@ type CCLifecycleActions interface {
 	LifecycleApproveCC(req *lb.ApproveChaincodeDefinitionForMyOrgArgs, channelName string) ([]byte, error)
 	LifecycleQueryApproved(req *lb.QueryApprovedChaincodeDefinitionArgs, channelName string) (*lb.QueryApprovedChaincodeDefinitionResult, error)
 	LifecycleCommitCC(req *lb.CommitChaincodeDefinitionArgs, channelName string) ([]byte, error)
-	LifecycleQueryCommittedCC(req *lb.QueryChaincodeDefinitionsArgs, channelName string) (*lb.QueryChaincodeDefinitionResult, error)
+	LifecycleQueryCommittedCC(req *lb.QueryChaincodeDefinitionsArgs, channelName string) (*lb.QueryChaincodeDefinitionsResult, error)
 	LifecycleQueryCommitReadiness(req *lb.CheckCommitReadinessArgs, channelName string) (*lb.CheckCommitReadinessResult, error)
 	QueryInstallCC(req *lb.GetInstalledChaincodePackageArgs, channelName string) (*lb.GetInstalledChaincodePackageResult, error)
 	InstallNewCC(req *lb.InstallChaincodeArgs, channelName string) ([]byte, error)
@@ -51,12 +51,12 @@ func (f FabricConnection) LifecycleCommitCC(req *lb.CommitChaincodeDefinitionArg
 	return f.ccLifecycle(channelName, lifecycleCommitFuncName, req)
 }
 
-func (f FabricConnection) LifecycleQueryCommittedCC(req *lb.QueryChaincodeDefinitionsArgs, channelName string) (*lb.QueryChaincodeDefinitionResult, error) {
+func (f FabricConnection) LifecycleQueryCommittedCC(req *lb.QueryChaincodeDefinitionsArgs, channelName string) (*lb.QueryChaincodeDefinitionsResult, error) {
 	res, err := f.ccLifecycle(channelName, lifecycleQueryChaincodeDefinitionsFunc, req)
 	if err != nil {
 		return nil, err
 	}
-	qCommitedCC := &lb.QueryChaincodeDefinitionResult{}
+	qCommitedCC := &lb.QueryChaincodeDefinitionsResult{}
 	err = proto.Unmarshal(res, qCommitedCC)
 	if err != nil {
 		return nil, err
@@ -79,7 +79,7 @@ func (f FabricConnection) LifecycleQueryCommitReadiness(req *lb.CheckCommitReadi
 
 func (f FabricConnection) QueryInstallCC(req *lb.GetInstalledChaincodePackageArgs, channelName string) (*lb.GetInstalledChaincodePackageResult, error) {
 	res, err := f.ccLifecycle(channelName, lifecycleQueryInstalledChaincodesFunc, req)
-	if err == nil {
+	if err != nil {
 		return nil, err
 	}
 	qInstalledCC := &lb.GetInstalledChaincodePackageResult{}

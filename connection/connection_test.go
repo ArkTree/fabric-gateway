@@ -2,7 +2,6 @@ package connection
 
 import (
 	"fmt"
-	"github.com/golang/protobuf/proto"
 	lb "github.com/hyperledger/fabric-protos-go/peer/lifecycle"
 	"testing"
 )
@@ -44,12 +43,10 @@ func TestNewGateway(t *testing.T) {
 			Sequence: 1,
 		}
 		res, err := con.LifecycleQueryApproved(&req, channelName)
-		abc := lb.QueryApprovedChaincodeDefinitionResult{}
-		proto.Unmarshal(res, &abc)
 		if err != nil {
 			t.Fatal(err)
 		}
-		fmt.Println(string(res))
+		fmt.Println(res)
 	})
 	t.Run("Test Lifecycle Commit CC", func(t *testing.T) {
 		req := lb.CommitChaincodeDefinitionArgs{
@@ -72,9 +69,7 @@ func TestNewGateway(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		abc := lb.CheckCommitReadinessResult{}
-		proto.Unmarshal(res, &abc)
-		fmt.Println(string(res))
+		fmt.Println(res)
 	})
 	t.Run("Test Lifecycle query Commited", func(t *testing.T) {
 		req := lb.QueryChaincodeDefinitionsArgs{}
@@ -82,7 +77,7 @@ func TestNewGateway(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		fmt.Println(string(res))
+		fmt.Println(res)
 	})
 
 	t.Run("Test Lifecycle query installed cc", func(t *testing.T) {
@@ -91,6 +86,6 @@ func TestNewGateway(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		fmt.Println(string(res))
+		fmt.Println(res)
 	})
 }
