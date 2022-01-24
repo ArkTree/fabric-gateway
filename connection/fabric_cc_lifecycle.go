@@ -77,12 +77,12 @@ func (f FabricConnection) LifecycleQueryCommitReadiness(req *lb.CheckCommitReadi
 	return qCommitedReadiness, nil
 }
 
-func (f FabricConnection) QueryInstallCC(req *lb.GetInstalledChaincodePackageArgs, channelName string) (*lb.GetInstalledChaincodePackageResult, error) {
+func (f FabricConnection) QueryInstallCC(req *lb.QueryInstalledChaincodesArgs, channelName string) (*lb.QueryInstalledChaincodesResult, error) {
 	res, err := f.ccLifecycle(channelName, lifecycleQueryInstalledChaincodesFunc, req)
 	if err != nil {
 		return nil, err
 	}
-	qInstalledCC := &lb.GetInstalledChaincodePackageResult{}
+	qInstalledCC := &lb.QueryInstalledChaincodesResult{}
 	err = proto.Unmarshal(res, qInstalledCC)
 	if err != nil {
 		return nil, err
