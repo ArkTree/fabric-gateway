@@ -9,6 +9,7 @@ import (
 	"github.com/hyperledger/fabric-gateway/pkg/identity"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
+	"time"
 )
 
 type FabricConnection struct {
@@ -44,7 +45,15 @@ func New(config *APIConfig) (*FabricConnection, error) {
 	}
 
 	// Create a Gateway connection for a specific client identity.
-	gateway, err := client.Connect(id, client.WithSign(sign), client.WithClientConnection(clientConnection))
+	gateway, err := client.Connect(
+		id,
+		client.WithSign(sign),
+		client.WithClientConnection(clientConnection),
+		client.WithEvaluateTimeout(5*time.Second),
+		client.WithEndorseTimeout(15*time.Second),
+		client.WithSubmitTimeout(5*time.Second),
+		client.WithCommitStatusTimeout(1*time.Minute),
+	)
 	if err != nil {
 		glog.Errorf("Failed to dail connection: %v", err)
 		return nil, err
