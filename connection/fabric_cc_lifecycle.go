@@ -91,7 +91,20 @@ func (f FabricConnection) QueryInstallCC(req *lb.QueryInstalledChaincodesArgs, c
 }
 
 func (f FabricConnection) InstallNewCC(req *lb.InstallChaincodeArgs, channelName string) ([]byte, error) {
-	return f.ccLifecycle(channelName, lifecycleInstallFuncName, req)
+	argsBytes, err := proto.Marshal(req)
+	if err != nil {
+		glog.Errorf("Failed to marshal %v", err)
+		return nil, err
+	}
+	network := f.GetNetwork(channelName)
+	contract := network.GetContract(lifecycleCC)
+	proposal, err := contract.NewProposal(lifecycleInstallFuncName, client.WithBytesArguments(argsBytes))
+	if err != nil {
+		glog.Errorf("Failed to marshal %v", err)
+		return nil, err
+	}
+	res, err := proposal.Endorse()
+	return res.Result(), err
 }
 
 func (f FabricConnection) ccLifecycle(channelName, ccAction string, req proto.Message) ([]byte, error) {
